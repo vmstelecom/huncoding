@@ -5,7 +5,7 @@ import "net/http"
 type RestErr struct {
 	Message string   `json:"message"`
 	Err     string   `json:"err"`
-	Code    int64    `json:"code"`
+	Code    int      `json:"code"`
 	Causes  []Causes `json:"couses,omitempty"`
 }
 
@@ -14,7 +14,11 @@ type Causes struct {
 	Message string `json:"message"`
 }
 
-func NewRestErr(message, err string, code int64, causes []Causes) *RestErr {
+func (r *RestErr) Error() string {
+	return r.Message
+}
+
+func NewRestErr(message, err string, code int, causes []Causes) *RestErr {
 	return &RestErr{
 		Message: message,
 		Err:     err,
@@ -45,5 +49,21 @@ func NewInternalServerError(message string) *RestErr {
 		Message: message,
 		Err:     "internal server error",
 		Code:    http.StatusInternalServerError,
+	}
+}
+
+func NewNotFoundError(message string) *RestErr {
+	return &RestErr{
+		Message: message,
+		Err:     "not found",
+		Code:    http.StatusNotFound,
+	}
+}
+
+func NewForbidenError(message string) *RestErr {
+	return &RestErr{
+		Message: message,
+		Err:     "forbiden",
+		Code:    http.StatusForbidden,
 	}
 }
